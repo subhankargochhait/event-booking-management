@@ -15,7 +15,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-orange-50 to-yellow-50 min-h-screen">
-<?php include("includes/header.php"); ?>
+<?php include("../includes/user_header.php"); ?>
 
     <div class="container mx-auto px-4 py-8">
         <!-- Header -->
@@ -193,7 +193,7 @@
             </div>
         </div>
     </div>
-        <?php include("includes/footer.php"); ?>
+        <?php include("../includes/footer.php"); ?>
 
 </body>
 </html>

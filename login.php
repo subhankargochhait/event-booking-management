@@ -1,4 +1,32 @@
-          
+<?php
+session_start();
+include("config/db.php");
+
+$error = ""; // store error message
+
+if (isset($_POST["login"])) {
+    // check safely
+    $email    = isset($_POST["email"]) ? $_POST["email"] : "";
+    $password = isset($_POST["password"]) ? $_POST["password"] : "";
+
+    if (!empty($email) && !empty($password)) {
+        $sel = "SELECT * FROM user WHERE email='$email' AND password='$password'";
+        $rs  = $con->query($sel);
+
+        if ($rs && $rs->num_rows > 0) {
+            $row = $rs->fetch_assoc();
+            $_SESSION["un"] = $row["name"];
+            header("Location: user/dashboard.php");
+            exit;
+        } else {
+            $error = "Invalid email or password!";
+        }
+    } else {
+        $error = "Please enter both email and password!";
+    }
+}
+?>
+
        <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,26 +101,27 @@
                 </div>
                 
                 <div class="bg-white rounded-2xl shadow-xl p-8">
-                    <form class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-orange-600">
-                                <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                            </label>
-                            <a href="#" class="text-sm text-orange-600 hover:text-orange-700">Forgot password?</a>
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all">
-                            Sign In
-                        </button>
-                    </form>
+         <form class="space-y-6" action="" method="POST">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              
+              <input type="email" name="email" required
+                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <input type="password" name="password" required
+                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+            </div>
+            <div class="flex items-center justify-between">
+              <a href="#" class="text-sm text-orange-600 hover:text-orange-700">Forgot password?</a>
+            </div>
+            <button type="submit" name="login"
+                    class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all">
+              Sign In
+            </button>
+          </form>
+
                     
                     <div class="mt-6 text-center">
                         <p class="text-gray-600">Don't have an account? 
@@ -103,6 +132,6 @@
             </div>
         </div>
     </div>
-    <script src="assets/js/app.js"></script>
+    <!-- <script src="assets/js/app.js"></script> -->
 </body>
 </html>

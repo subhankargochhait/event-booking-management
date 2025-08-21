@@ -1,3 +1,42 @@
+<?php
+session_start();
+include("../config/db.php");
+
+$error = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim($_POST["email"]);
+    $password = trim($_POST["password"]);
+    $access_code = trim($_POST["access_code"]);
+
+    // Use prepared statement (more secure than direct query)
+    $stmt = $con->prepare("SELECT * FROM admin WHERE email = ? AND access_code = ?");
+    $stmt->bind_param("ss", $email, $access_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+
+        // If you are using password_hash() while inserting admin
+        // if (password_verify($password, $row["password"])) {
+        
+        if ($password === $row["password"]) {  // plain text password check
+            $_SESSION["admin_name"] = $row["name"];
+            $_SESSION["admin_email"] = $row["email"];
+            header("Location: dashboard.php");
+            exit();
+        } else {
+            $error = "❌ Invalid password!";
+        }
+    } else {
+        $error = "❌ Invalid email or access code!";
+    }
+
+    $stmt->close();
+}
+?>
+
 
              
        <!DOCTYPE html>
@@ -74,18 +113,18 @@
                 </div>
                 
                 <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200">
-                    <form class="space-y-6">
+                    <form class="space-y-6" action="" method="POST">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Admin Email</label>
-                            <input type="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <input type="email" name="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Admin Password</label>
-                            <input type="password" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <input type="password" name="password"  class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Access Code</label>
-                            <input type="text" placeholder="Enter admin access code" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <input type="text" name="access_code" placeholder="Enter admin access code" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
                         <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-xl font-medium hover:from-purple-600 hover:to-indigo-600 transition-all">
                             Admin Login

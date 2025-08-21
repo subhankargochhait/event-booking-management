@@ -1,5 +1,31 @@
-          
-       <!DOCTYPE html>
+<?php
+include("config/db.php");
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name     = $_POST['name'];
+    $email    = $_POST['email'];
+    $phone    = $_POST['phone'];
+    $address  = $_POST['address'];
+    $password = $_POST['password'];
+
+    // Insert user data into the database
+    $sql = "INSERT INTO user (name, email, phone, address, password) 
+            VALUES ('$name', '$email', '$phone', '$address', '$password')";
+
+    if (mysqli_query($con, $sql)) {
+        // Redirect to login.php after success
+        header("Location: login.php");
+        exit(); // important to stop further execution
+    } else {
+        echo "Error: " . mysqli_error($con);
+    }
+}
+
+mysqli_close($con);
+?>
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -73,36 +99,33 @@
                 </div>
                 
                 <div class="bg-white rounded-2xl shadow-xl p-8">
-                    <form class="space-y-6">
+                    <form class="space-y-6" action="" method="POST">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                                <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <input type="text" name="name" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
                             </div>
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <input type="email" name="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <input type="tel" name="phone" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
 
                           <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                            <input type="text" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <input type="text" name="address" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <input type="password" name="password" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
                       
                         <div>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-orange-600">
-                                <span class="ml-2 text-sm text-gray-600">I agree to the Terms of Service and Privacy Policy</span>
-                            </label>
+                       
                         </div>
                         <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all">
                             Create Account
@@ -119,6 +142,6 @@
         </div>
     </div>
 
-        <script src="assets/js/app.js"></script>
+        <!-- <script src="assets/js/app.js"></script> -->
 </body>
 </html>
