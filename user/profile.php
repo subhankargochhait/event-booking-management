@@ -47,7 +47,7 @@ if (!$user) {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <div class="flex flex-col items-center">
           <div class="w-28 h-28 rounded-full bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center text-white text-4xl font-bold">
-            <?php echo strtoupper(substr($user["name"], 0, 1)); ?>
+           
           </div>
           <h2 class="mt-4 text-xl font-semibold text-gray-700">
             <?php echo htmlspecialchars($user["name"]); ?>

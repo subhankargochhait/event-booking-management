@@ -19,7 +19,7 @@
 </a>
         <a href="../user/festival.php" class="nav-link text-gray-700 hover:text-orange-600 font-medium transition-colors">Festivals</a>
         <a href="../user/cultural_events.php" class="nav-link text-gray-700 hover:text-orange-600 font-medium transition-colors">Cultural Events</a>
-        <a href="about.php" class="nav-link text-gray-700 hover:text-orange-600 font-medium transition-colors">My Events</a>
+        <a href="my_events.php" class="nav-link text-gray-700 hover:text-orange-600 font-medium transition-colors">My Events</a>
         <a href="../user/profile.php" class="nav-link text-gray-700 hover:text-orange-600 font-medium transition-colors">Profile</a>
        
       </nav>
