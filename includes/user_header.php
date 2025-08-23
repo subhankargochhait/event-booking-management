@@ -27,7 +27,7 @@
       <!-- Desktop Buttons -->
       <div class="hidden md:flex items-center space-x-3">
         
-        <a href="../admin/logout.php" class="bg-gradient-to-r from-red-500 to-indigo-500 text-white px-4 py-2 rounded-full font-medium hover:from-red-600 hover:to-red-600 transition-all text-sm">
+        <a href="../user/logout.php" class="bg-gradient-to-r from-red-500 to-indigo-500 text-white px-4 py-2 rounded-full font-medium hover:from-red-600 hover:to-red-600 transition-all text-sm">
           Logout
         </a>
       </div>

@@ -12,6 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
     $description = mysqli_real_escape_string($con, $_POST['description']);
     $category    = mysqli_real_escape_string($con, $_POST['category']);
     $status      = mysqli_real_escape_string($con, $_POST['status']);
+    $location    = mysqli_real_escape_string($con, $_POST['location']);
+    $highlights  = mysqli_real_escape_string($con, $_POST['highlights']);
+    $start_time  = $_POST['start_time'];
+    $end_time    = $_POST['end_time'];
 
     // Handle Image Upload
     $event_image = "";
@@ -33,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
         }
     }
 
-    $sql = "INSERT INTO events (name, description, event_date, price, capacity, status, event_image, category)
-            VALUES ('$name', '$description', '$date', '$price', '$capacity', '$status', '$event_image', '$category')";
+    $sql = "INSERT INTO events (name, description, event_date, price, capacity, status, event_image, category, start_time, end_time, location, highlights)
+            VALUES ('$name', '$description', '$date', '$price', '$capacity', '$status', '$event_image', '$category', '$start_time', '$end_time', '$location', '$highlights')";
     
     if ($con->query($sql)) {
         header("Location: " . $_SERVER['PHP_SELF']);
@@ -86,49 +90,83 @@ $result = $con->query($sql);
       <div id="addEventForm" class="hidden bg-white rounded-lg shadow-md p-6 mb-6">
         <h4 class="text-lg font-bold text-gray-800 mb-4">Add New Event</h4>
         <form method="POST" action="" enctype="multipart/form-data">
+          
           <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="block text-gray-700 font-medium mb-2">Event Name</label>
-              <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <label class="block text-gray-700 font-medium mb-2">Event Name *</label>
+              <input type="text" name="name" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
-              <label class="block text-gray-700 font-medium mb-2">Event Date</label>
-              <input type="date" name="event_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <label class="block text-gray-700 font-medium mb-2">Event Date *</label>
+              <input type="date" name="event_date" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
           </div>
+
           <div class="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label class="block text-gray-700 font-medium mb-2">Price (₹)</label>
-              <input type="number" name="price" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <label class="block text-gray-700 font-medium mb-2">Start Time *</label>
+              <input type="time" name="start_time" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
-              <label class="block text-gray-700 font-medium mb-2">Capacity</label>
-              <input type="number" name="capacity" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <label class="block text-gray-700 font-medium mb-2">End Time *</label>
+              <input type="time" name="end_time" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
           </div>
+
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Price (₹) *</label>
+              <input type="number" name="price" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Capacity *</label>
+              <input type="number" name="capacity" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Location *</label>
+              <input type="text" name="location" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-gray-700 font-medium mb-2">Highlights *</label>
+              <input type="text" name="highlights" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
           <div class="mb-4">
-            <label class="block text-gray-700 font-medium mb-2">Event Category</label>
-            <select name="category" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <label class="block text-gray-700 font-medium mb-2">Event Category *</label>
+            <select name="category" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">-- Select Category --</option>
               <option value="Cultural Events">Cultural Events</option>
               <option value="Festivals">Festivals</option>
+              <option value="Concerts">Concerts</option>
+              <option value="Sports">Sports</option>
+              <option value="Workshops">Workshops</option>
+              <option value="Conferences">Conferences</option>
             </select>
           </div>
+
           <div class="mb-4">
-            <label class="block text-gray-700 font-medium mb-2">Event Status</label>
-            <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <label class="block text-gray-700 font-medium mb-2">Event Status *</label>
+            <select name="status" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
               <option value="cancelled">Cancelled</option>
             </select>
           </div>
+
           <div class="mb-4">
-            <label class="block text-gray-700 font-medium mb-2">Event Image</label>
-            <input type="file" name="event_image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <label class="block text-gray-700 font-medium mb-2">Event Image *</label>
+            <input type="file" name="event_image" accept="image/*" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
           </div>
+
           <div class="mb-4">
-            <label class="block text-gray-700 font-medium mb-2">Description</label>
-            <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+            <label class="block text-gray-700 font-medium mb-2">Description *</label>
+            <textarea name="description" rows="3" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
+
           <div class="flex space-x-3">
             <button type="submit" name="add_event" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
               💾 Save Event
@@ -149,6 +187,8 @@ $result = $con->query($sql);
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bookings</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -173,6 +213,10 @@ $result = $con->query($sql);
                 </td>
                 <td class="px-6 py-4 text-gray-800"><?php echo $row['category']; ?></td>
                 <td class="px-6 py-4 text-gray-800"><?php echo date("M d, Y", strtotime($row['event_date'])); ?></td>
+                <td class="px-6 py-4 text-gray-800">
+                  <?php echo date("h:i A", strtotime($row['start_time'])) . " - " . date("h:i A", strtotime($row['end_time'])); ?>
+                </td>
+                <td class="px-6 py-4 text-gray-800"><?php echo $row['location']; ?></td>
                 <td class="px-6 py-4 text-gray-800">₹<?php echo $row['price']; ?></td>
                 <td class="px-6 py-4 text-gray-800"><?php echo $row['total_bookings'] . " / " . $row['capacity']; ?></td>
                 <td class="px-6 py-4">

@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION["un"])) {
+    header("Location: ../login.php");
+    exit();
+}
 // book_event.php
 include("../config/db.php");
 
