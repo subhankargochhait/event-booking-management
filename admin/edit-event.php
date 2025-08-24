@@ -121,20 +121,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_event'])) {
         </div>
       </div>
 
-      <!-- Category -->
+      <!-- Category (Updated to match Add Event page) -->
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">Event Category</label>
         <select name="category" required class="w-full px-3 py-2 border rounded-lg">
-          <option value="Cultural Events" <?php if($event['category']=="Cultural Events") echo "selected"; ?>>Cultural Events</option>
-          <option value="Festivals" <?php if($event['category']=="Festivals") echo "selected"; ?>>Festivals</option>
-          <option value="Concerts" <?php if($event['category']=="Concerts") echo "selected"; ?>>Concerts</option>
-          <option value="Sports" <?php if($event['category']=="Sports") echo "selected"; ?>>Sports</option>
-          <option value="Workshops" <?php if($event['category']=="Workshops") echo "selected"; ?>>Workshops</option>
-          <option value="Conferences" <?php if($event['category']=="Conferences") echo "selected"; ?>>Conferences</option>
+          <option value="Upcoming" <?php if($event['category']=="Upcoming") echo "selected"; ?>>Upcoming</option>
+          <option value="Festival" <?php if($event['category']=="Festival") echo "selected"; ?>>Festival</option>
+          <option value="Tech" <?php if($event['category']=="Tech") echo "selected"; ?>>Tech</option>
+          <option value="Cultural" <?php if($event['category']=="Cultural") echo "selected"; ?>>Cultural</option>
         </select>
       </div>
 
-      <!-- New Extra Fields -->
+      <!-- Extra Fields -->
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">Location</label>
         <input type="text" name="location" value="<?php echo htmlspecialchars($event['location']); ?>" class="w-full px-3 py-2 border rounded-lg">

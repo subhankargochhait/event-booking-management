@@ -135,16 +135,15 @@ $result = $con->query($sql);
             </div>
           </div>
 
+          <!-- Updated Category -->
           <div class="mb-4">
             <label class="block text-gray-700 font-medium mb-2">Event Category *</label>
             <select name="category" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
               <option value="">-- Select Category --</option>
-              <option value="Cultural Events">Cultural Events</option>
-              <option value="Festivals">Festivals</option>
-              <option value="Concerts">Concerts</option>
-              <option value="Sports">Sports</option>
-              <option value="Workshops">Workshops</option>
-              <option value="Conferences">Conferences</option>
+              <option value="Upcoming">Upcoming</option>
+              <option value="Festival">Festival</option>
+              <option value="Tech">Tech</option>
+              <option value="Cultural">Cultural</option>
             </select>
           </div>
 
