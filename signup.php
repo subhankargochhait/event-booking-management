@@ -1,147 +1,74 @@
 <?php
+session_start();
 include("config/db.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name     = $_POST['name'];
-    $email    = $_POST['email'];
-    $phone    = $_POST['phone'];
-    $address  = $_POST['address'];
-    $password = $_POST['password'];
+$error = "";
+$success = "";
 
-    // Insert user data into the database
-    $sql = "INSERT INTO user (name, email, phone, address, password) 
-            VALUES ('$name', '$email', '$phone', '$address', '$password')";
+if (isset($_POST['signup'])) {
+    $name    = trim($_POST['name'] ?? '');
+    $email   = trim($_POST['email'] ?? '');
+    $phone   = trim($_POST['phone'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $password= trim($_POST['password'] ?? '');
+    $cpassword = trim($_POST['cpassword'] ?? '');
 
-    if (mysqli_query($con, $sql)) {
-        // Redirect to login.php after success
-        header("Location: login.php");
-        exit(); // important to stop further execution
+    if (!$name || !$email || !$phone || !$address || !$password || !$cpassword) {
+        $error = "All fields are required!";
+    } elseif ($password !== $cpassword) {
+        $error = "Passwords do not match!";
     } else {
-        echo "Error: " . mysqli_error($con);
+        // Check if email already exists
+        $stmt = $con->prepare("SELECT uid FROM user WHERE email=? LIMIT 1");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows > 0) {
+            $error = "Email already registered!";
+        } else {
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            $stmt = $con->prepare("INSERT INTO user (name,email,phone,address,password) VALUES (?,?,?,?,?)");
+            $stmt->bind_param("sssss", $name, $email, $phone, $address, $hashed_password);
+            if ($stmt->execute()) {
+                $success = "Registration successful! You can now login.";
+            } else {
+                $error = "Error registering user: " . $stmt->error;
+            }
+        }
     }
 }
-
-mysqli_close($con);
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bharat Events - Indian Festivals & Cultural Celebrations</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 25%, #ffd23f 50%, #06d6a0 75%, #118ab2 100%);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .indian-pattern {
-            background-image: 
-                radial-gradient(circle at 25% 25%, #ffd23f 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, #ff6b35 2px, transparent 2px);
-            background-size: 50px 50px;
-        }
-        
-        .diya-glow {
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.6);
-        }
-        
-        .festival-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(255, 107, 53, 0.1);
-        }
-        
-        .price-tag {
-            background: linear-gradient(45deg, #ff6b35, #f7931e);
-        }
-        
-        .cultural-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Sign Up - Bharat Events</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-orange-50 to-yellow-50 min-h-screen"></body>
+<body class="bg-orange-50 min-h-screen flex items-center justify-center">
 
-<!-- Sign Up Page -->
-    <div id="signup" >
-        <div class="min-h-screen flex items-center justify-center py-12 px-4">
-            <div class="max-w-md w-full">
-                <div class="text-center mb-8">
-                    <div class="text-4xl mb-4">🎊</div>
-                    <h2 class="text-3xl font-bold text-gray-900">Join Bharat Events</h2>
-                    <p class="text-gray-600 mt-2">Create your account to book festival tickets</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl shadow-xl p-8">
-                    <form class="space-y-6" action="" method="POST">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                                <input type="text" name="name" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                            </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <input type="email" name="email" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" name="phone" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
+<div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl">
+    <h2 class="text-2xl font-bold mb-4 text-center">Sign Up</h2>
 
-                          <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                            <input type="text" name="address" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
+    <?php if($error): ?>
+        <p class="text-red-600 mb-4"><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
+    <?php if($success): ?>
+        <p class="text-green-600 mb-4"><?php echo htmlspecialchars($success); ?></p>
+    <?php endif; ?>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <input type="password" name="password" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
-                      
-                        <div>
-                       
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all">
-                            Create Account
-                        </button>
-                    </form>
-                    
-                    <div class="mt-6 text-center">
-                        <p class="text-gray-600">Already have an account? 
-                            <a href="login.php"><button onclick="showPage('login')" class="text-orange-600 hover:text-orange-700 font-medium">Sign in</button></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-        <!-- <script src="assets/js/app.js"></script> -->
+    <form method="POST" class="space-y-4">
+        <input type="text" name="name" placeholder="Full Name" required class="w-full border rounded-xl px-4 py-2">
+        <input type="email" name="email" placeholder="Email" required class="w-full border rounded-xl px-4 py-2">
+        <input type="text" name="phone" placeholder="Phone" required class="w-full border rounded-xl px-4 py-2">
+        <input type="text" name="address" placeholder="Address" required class="w-full border rounded-xl px-4 py-2">
+        <input type="password" name="password" placeholder="Password" required class="w-full border rounded-xl px-4 py-2">
+        <input type="password" name="cpassword" placeholder="Confirm Password" required class="w-full border rounded-xl px-4 py-2">
+        <button type="submit" name="signup" class="w-full bg-orange-500 text-white py-3 rounded-xl hover:bg-orange-600">Sign Up</button>
+    </form>
+    <p class="mt-4 text-center text-gray-600">Already have an account? <a href="login.php" class="text-orange-600">Login</a></p>
+</div>
 </body>
 </html>

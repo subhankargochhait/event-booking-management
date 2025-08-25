@@ -31,8 +31,6 @@
             <a href="cultural_events.php" class="block px-4 py-2 text-gray-700 hover:bg-orange-50 hover:text-orange-600">Cultural</a>
           </div>
         </div>
-
-        <a href="my_bookings.php" class="text-gray-700 hover:text-orange-600 font-medium transition-colors">My Bookings</a>
         <a href="organize.php" class="text-gray-700 hover:text-orange-600 font-medium transition-colors">Organize</a>
       </nav>
 

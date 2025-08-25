@@ -7,7 +7,7 @@ include("../config/db.php");
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cultural Events</title>
+  <title>Tech Events</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -16,21 +16,21 @@ include("../config/db.php");
     .festival-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.1); }
   </style>
 </head>
-<body class="bg-gradient-to-br from-pink-50 to-red-50 min-h-screen">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
 <?php include("../includes/user_header.php"); ?>
 
 <div class="container mx-auto px-4 py-8">
   <div class="text-center mb-12">
-    <h1 class="text-5xl font-bold text-black mb-4">🎭 Cultural Events</h1>
-    <p class="text-xl text-black opacity-90">Celebrate traditions, art, and heritage</p>
+    <h1 class="text-5xl font-bold text-black mb-4">💻 Tech Events</h1>
+    <p class="text-xl text-black opacity-90">Discover technology, innovation, and startup events</p>
   </div>
 
   <?php
-  // Fetch only Cultural active events
+  // Fetch only Tech active events
   $stmt = $con->prepare("SELECT event_id, name, description, price, event_date, start_time, end_time, 
                                 location, highlights, category, event_image 
                          FROM events 
-                         WHERE status='active' AND category='Cultural'
+                         WHERE status='active' AND category='Tech'
                          ORDER BY event_date ASC");
   $stmt->execute();
   $res = $stmt->get_result();
@@ -47,9 +47,9 @@ include("../config/db.php");
               <img src="../uploads/events/<?php echo htmlspecialchars($e['event_image']); ?>" 
                    class="w-full h-48 object-cover" alt="">
             <?php else: ?>
-              <span class="absolute inset-0 flex items-center justify-center text-6xl">🎭</span>
+              <span class="absolute inset-0 flex items-center justify-center text-6xl">💻</span>
             <?php endif; ?>
-            <span class="absolute top-3 right-3 bg-pink-600 text-white text-xs px-3 py-1 rounded-full">
+            <span class="absolute top-3 right-3 bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
               <?php echo htmlspecialchars($e['category']); ?>
             </span>
           </div>
@@ -76,17 +76,17 @@ include("../config/db.php");
 
           <!-- Price & Button -->
           <div class="flex justify-between items-center mb-4">
-            <span class="text-2xl font-bold text-pink-600">₹<?php echo number_format($e['price'],2); ?></span>
+            <span class="text-2xl font-bold text-blue-600">₹<?php echo number_format($e['price'],2); ?></span>
           </div>
 
           <a href="checkout.php?id=<?php echo (int)$e['event_id']; ?>"
-             class="w-full block text-center bg-gradient-to-r from-pink-500 to-red-600 text-white font-bold py-3 px-6 rounded-xl hover:from-pink-600 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+             class="w-full block text-center bg-gradient-to-r from-blue-500 to-indigo-700 text-white font-bold py-3 px-6 rounded-xl hover:from-blue-600 hover:to-indigo-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
              🎟️ Book Now
           </a>
         </div>
       <?php endwhile; ?>
     <?php else: ?>
-      <p class="text-center text-gray-600 col-span-3">No cultural events available right now.</p>
+      <p class="text-center text-gray-600 col-span-3">No tech events available right now.</p>
     <?php endif; ?>
     <?php $stmt->close(); ?>
   </div>

@@ -2,136 +2,60 @@
 session_start();
 include("config/db.php");
 
-$error = ""; // store error message
+$error = "";
 
 if (isset($_POST["login"])) {
-    // check safely
-    $email    = isset($_POST["email"]) ? $_POST["email"] : "";
-    $password = isset($_POST["password"]) ? $_POST["password"] : "";
+    $email    = trim($_POST["email"] ?? "");
+    $password = trim($_POST["password"] ?? "");
 
-    if (!empty($email) && !empty($password)) {
-        $sel = "SELECT * FROM user WHERE email='$email' AND password='$password'";
-        $rs  = $con->query($sel);
+    if (!$email || !$password) {
+        $error = "Please enter both email and password!";
+    } else {
+        $stmt = $con->prepare("SELECT * FROM user WHERE email=? LIMIT 1");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
 
-        if ($rs && $rs->num_rows > 0) {
-            $row = $rs->fetch_assoc();
-            $_SESSION["un"] = $row["name"];
+        if ($user && password_verify($password, $user['password'])) {
+            // ✅ store user info in session
+            $_SESSION['uid'] = $user['uid'];
+            $_SESSION['un'] = $user['email'];
+            $_SESSION['full_name'] = $user['name'];
+            $_SESSION['phone'] = $user['phone'];
+            $_SESSION['address'] = $user['address'];
+
             header("Location: user/dashboard.php");
             exit;
         } else {
             $error = "Invalid email or password!";
         }
-    } else {
-        $error = "Please enter both email and password!";
     }
 }
 ?>
-
-       <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bharat Events - Indian Festivals & Cultural Celebrations</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 25%, #ffd23f 50%, #06d6a0 75%, #118ab2 100%);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .indian-pattern {
-            background-image: 
-                radial-gradient(circle at 25% 25%, #ffd23f 2px, transparent 2px),
-                radial-gradient(circle at 75% 75%, #ff6b35 2px, transparent 2px);
-            background-size: 50px 50px;
-        }
-        
-        .diya-glow {
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.6);
-        }
-        
-        .festival-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(255, 107, 53, 0.1);
-        }
-        
-        .price-tag {
-            background: linear-gradient(45deg, #ff6b35, #f7931e);
-        }
-        
-        .cultural-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Login - Bharat Events</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-orange-50 to-yellow-50 min-h-screen">
-    
-    <!-- Login Page -->
-    <div id="login">
-        <div class="min-h-screen flex items-center justify-center py-12 px-4">
-            <div class="max-w-md w-full">
-                <div class="text-center mb-8">
-                    <div class="text-4xl mb-4">🪔</div>
-                    <h2 class="text-3xl font-bold text-gray-900">Welcome Back</h2>
-                    <p class="text-gray-600 mt-2">Sign in to your Bharat Events account</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl shadow-xl p-8">
-         <form class="space-y-6" action="" method="POST">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              
-              <input type="email" name="email" required
-                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <input type="password" name="password" required
-                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
-            </div>
-            <div class="flex items-center justify-between">
-              <a href="#" class="text-sm text-orange-600 hover:text-orange-700">Forgot password?</a>
-            </div>
-            <button type="submit" name="login"
-                    class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 px-6 rounded-xl font-medium hover:from-orange-600 hover:to-red-600 transition-all">
-              Sign In
-            </button>
-          </form>
+<body class="bg-orange-50 min-h-screen flex items-center justify-center">
 
-                    
-                    <div class="mt-6 text-center">
-                        <p class="text-gray-600">Don't have an account? 
-                            <a href="signup.php"><button onclick="showPage('signup')" class="text-orange-600 hover:text-orange-700 font-medium">Sign up</button></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <script src="assets/js/app.js"></script> -->
+<div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl">
+    <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
+
+    <?php if($error): ?>
+        <p class="text-red-600 mb-4"><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
+
+    <form method="POST" class="space-y-4">
+        <input type="email" name="email" placeholder="Email" required class="w-full border rounded-xl px-4 py-2">
+        <input type="password" name="password" placeholder="Password" required class="w-full border rounded-xl px-4 py-2">
+        <button type="submit" name="login" class="w-full bg-orange-500 text-white py-3 rounded-xl hover:bg-orange-600">Login</button>
+    </form>
+
+    <p class="mt-4 text-center text-gray-600">Don't have an account? <a href="signup.php" class="text-orange-600">Sign Up</a></p>
+</div>
 </body>
 </html>

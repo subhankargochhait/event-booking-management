@@ -1,47 +1,5 @@
 <?php
-include("config/db.php");
-
-// ===============================
-// Insert New Event
-// ===============================
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
-    $name        = mysqli_real_escape_string($con, $_POST['name']);
-    $date        = $_POST['event_date'];
-    $start_time  = $_POST['start_time'];
-    $end_time    = $_POST['end_time'];
-    $price       = $_POST['price'];
-    $capacity    = $_POST['capacity'];
-    $description = mysqli_real_escape_string($con, $_POST['description']);
-    $category    = mysqli_real_escape_string($con, $_POST['category']);
-    $location    = mysqli_real_escape_string($con, $_POST['location']);
-    $highlights  = mysqli_real_escape_string($con, $_POST['highlights']);
-    $status      = "active"; // default status
-
-    // Handle Image Upload
-    $event_image = "";
-    if (isset($_FILES['event_image']) && $_FILES['event_image']['error'] == 0) {
-        $targetDir = "../uploads/events/"; 
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-        $fileName = time() . "_" . basename($_FILES['event_image']['name']);
-        $targetFile = $targetDir . $fileName;
-        $allowedTypes = ['jpg','jpeg','png','gif','webp'];
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        if (in_array($fileExt, $allowedTypes)) {
-            move_uploaded_file($_FILES['event_image']['tmp_name'], $targetFile);
-            $event_image = $fileName;
-        }
-    }
-
-    $sql = "INSERT INTO events (name, description, event_date, start_time, end_time, price, capacity, 
-                                status, event_image, category, location, highlights) 
-            VALUES ('$name', '$description', '$date', '$start_time', '$end_time', 
-                    '$price', '$capacity', '$status', '$event_image', '$category', '$location', '$highlights')";
-    if ($con->query($sql)) {
-        echo "<script>alert('✅ Event Created Successfully!');</script>";
-    } else {
-        echo "<script>alert('❌ Error: Could not create event');</script>";
-    }
-}
+include("../config/db.php");
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
   </style>
 </head>
 <body class="min-h-screen bg-gray-50">
-  <?php include("includes/user_header.php"); ?>
+  <?php include("../includes/user_header.php"); ?>
 
   <div class="container mx-auto px-4 py-12">
     <div class="max-w-5xl mx-auto glass-effect rounded-3xl shadow-2xl overflow-hidden">
@@ -176,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_event'])) {
     </div>
   </div>
 
-  <?php include("includes/footer.php"); ?>
+  <?php include("../includes/footer.php"); ?>
 
   <script>
     // Floating label handling

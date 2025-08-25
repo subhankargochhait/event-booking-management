@@ -1,9 +1,4 @@
 <?php
-session_start();
-if (!isset($_SESSION["un"])) {
-    header("Location: ../login.php");
-    exit();
-}
 include("../config/db.php");
 ?>
 <!DOCTYPE html>
@@ -11,79 +6,88 @@ include("../config/db.php");
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Festivals</title>
+  <title>Festival Events</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
     body { font-family: 'Poppins', sans-serif; }
+    .festival-card { transition: .3s; }
+    .festival-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.1); }
   </style>
 </head>
-<body class="bg-orange-50 min-h-screen">
+<body class="bg-gradient-to-br from-orange-50 to-yellow-50 min-h-screen">
 <?php include("../includes/user_header.php"); ?>
 
-<div class="container mx-auto px-4 py-10">
-  <!-- Page Heading -->
+<div class="container mx-auto px-4 py-8">
   <div class="text-center mb-12">
-    <h1 class="text-5xl font-bold text-gray-800 mb-4">🎉 Indian Festivals</h1>
-    <p class="text-lg text-gray-600">Book celebration packages for traditional Indian festivals</p>
+    <h1 class="text-5xl font-bold text-black mb-4">🎉 Festival Events</h1>
+    <p class="text-xl text-black opacity-90">Celebrate with exciting festival events</p>
   </div>
 
   <?php
-  // Fetch events in "Festivals" category
-  $stmt = $con->prepare("SELECT event_id, name, description, price, event_date, category, event_image, location, highlights 
+  // Fetch only Festival active events
+  $stmt = $con->prepare("SELECT event_id, name, description, price, event_date, start_time, end_time, 
+                                location, highlights, category, event_image 
                          FROM events 
-                         WHERE status='active' AND category='Festivals' 
+                         WHERE status='active' AND category='Festival'
                          ORDER BY event_date ASC");
   $stmt->execute();
   $res = $stmt->get_result();
   ?>
 
-  <!-- Events Grid -->
-  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <?php while($e = $res->fetch_assoc()): ?>
-      <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2">
-        
-        <!-- Top Banner -->
-        <div class="relative bg-gradient-to-r from-orange-500 to-yellow-500 h-40 flex items-center justify-center">
-          <?php if(!empty($e['event_image'])): ?>
-            <img src="../uploads/events/<?php echo htmlspecialchars($e['event_image']); ?>" 
-                 class="h-24 w-24 object-contain drop-shadow-xl" alt="">
-          <?php else: ?>
-            <span class="text-6xl">🎪</span>
-          <?php endif; ?>
-          <span class="absolute top-3 right-3 bg-purple-600 text-white text-xs px-3 py-1 rounded-full">
-            <?php echo htmlspecialchars($e['category']); ?>
-          </span>
-        </div>
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+    <?php if ($res->num_rows > 0): ?>
+      <?php while($e = $res->fetch_assoc()): ?>
+        <div class="festival-card bg-white rounded-2xl p-6 shadow-lg hover:bg-gray-50">
 
-        <!-- Content -->
-        <div class="p-6">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-2xl font-bold text-gray-800"><?php echo htmlspecialchars($e['name']); ?></h3>
-            <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-semibold text-sm">
-              ₹<?php echo number_format($e['price'],0); ?>
+          <!-- Top Image -->
+          <div class="w-full h-48 mb-4 overflow-hidden rounded-xl bg-gray-100 relative">
+            <?php if(!empty($e['event_image'])): ?>
+              <img src="../uploads/events/<?php echo htmlspecialchars($e['event_image']); ?>" 
+                   class="w-full h-48 object-cover" alt="">
+            <?php else: ?>
+              <span class="absolute inset-0 flex items-center justify-center text-6xl">🎭</span>
+            <?php endif; ?>
+            <span class="absolute top-3 right-3 bg-pink-600 text-white text-xs px-3 py-1 rounded-full">
+              <?php echo htmlspecialchars($e['category']); ?>
             </span>
           </div>
+
+          <!-- Event Content -->
+          <h3 class="text-2xl font-semibold text-gray-800 mb-2"><?php echo htmlspecialchars($e['name']); ?></h3>
           <p class="text-gray-600 mb-4 line-clamp-3"><?php echo htmlspecialchars($e['description']); ?></p>
           
+          <!-- Event Details -->
           <div class="space-y-2 text-sm text-gray-700 mb-5">
             <p>📅 <?php echo date("F j, Y", strtotime($e['event_date'])); ?></p>
-            <?php if (!empty($e['location'])): ?>
-              <p>📍 <?php echo htmlspecialchars($e['location']); ?></p>
-            <?php endif; ?>
-            <?php if (!empty($e['highlights'])): ?>
-              <p>🎭 <?php echo htmlspecialchars($e['highlights']); ?></p>
-            <?php endif; ?>
+            <p>⏰ 
+              <?php 
+                if (!empty($e['start_time']) && !empty($e['end_time'])) {
+                    echo date("g:i A", strtotime($e['start_time'])) . " - " . date("g:i A", strtotime($e['end_time']));
+                } else {
+                    echo "All Day";
+                }
+              ?>
+            </p>
+            <p>📍 <?php echo htmlspecialchars($e['location']); ?></p>
+            <p>🎭 <?php echo htmlspecialchars($e['highlights']); ?></p>
           </div>
 
-          <!-- Book Button -->
-          <a href="festival_booking.php?id=<?php echo (int)$e['event_id']; ?>"
-             class="block text-center bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold py-3 rounded-xl hover:from-orange-600 hover:to-red-600 transition-all">
-             🎟️ Book Tickets
+          <!-- Price & Button -->
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-2xl font-bold text-pink-600">₹<?php echo number_format($e['price'],2); ?></span>
+          </div>
+
+          <a href="checkout.php?id=<?php echo (int)$e['event_id']; ?>"
+             class="w-full block text-center bg-gradient-to-r from-pink-500 to-pink-700 text-white font-bold py-3 px-6 rounded-xl hover:from-pink-600 hover:to-pink-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+             🎟️ Book Now
           </a>
         </div>
-      </div>
-    <?php endwhile; $stmt->close(); ?>
+      <?php endwhile; ?>
+    <?php else: ?>
+      <p class="text-center text-gray-600 col-span-3">No festival events available right now.</p>
+    <?php endif; ?>
+    <?php $stmt->close(); ?>
   </div>
 </div>
 

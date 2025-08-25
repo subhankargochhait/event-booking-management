@@ -78,7 +78,7 @@ include("config/db.php");
             <span class="text-2xl font-bold text-green-600">₹<?php echo number_format($e['price'],2); ?></span>
           </div>
 
-          <a href="booking.php?id=<?php echo (int)$e['event_id']; ?>"
+          <a href="login.php?id=<?php echo (int)$e['event_id']; ?>"
              class="w-full block text-center bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-3 px-6 rounded-xl hover:from-green-600 hover:to-green-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
              🎟️ Book Now
           </a>
